@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+    scrollbar-width: none;
+    font-family: 'Lato', sans-serif;
+    overflow: hidden
+}
+
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+
+.hide-scrollbar {
+  overflow: auto; 
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow: hidden
+}
+::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+@-moz-document url-prefix() {
+    html,body{overflow: hidden !important;}
+}

@@ -1,0 +1,81 @@
+import React, { useState, useEffect, useRef } from 'react'
+import { HiMenu } from 'react-icons/hi'
+import { AiFillCloseCircle } from 'react-icons/ai'
+import { Link, Route, Routes } from 'react-router-dom'
+import { Sidebar, UserProfile } from '../components/Index'
+import { client } from '../client'
+import logo from '../assets/logo.svg'
+import Pins from './Pins'
+import { userQuery } from '../utils/data'
+import { fetchUser } from '../utils/fetchUser'
+
+
+const Home = () => {
+    const [toggleSidebar, setToggleSidebar] = useState(false)
+    const [user, setUser] = useState(null)
+    const scrollRef = useRef(null)
+    const userInfo = fetchUser()
+
+
+    useEffect(() => {
+        const query = userQuery(userInfo?.googleId)
+
+        client.fetch(query)
+        .then((data) => {
+            setUser(data[0])
+        })
+    }, [])
+
+    useEffect(() => {
+        scrollRef.current.scrollTo(0, 0) 
+    }, [])
+
+    return (
+        <div className="flex bg-gray-50 md:flex-row flex-col h-screen transaction-height duration-75 ease-out">
+            <div className="hidden md:flex h-screen flex-initial">
+                <Sidebar user={user && user} />
+            </div>
+
+
+            <div className="flex md:hidden flex-row">
+
+                <div className="px-2 w-full flex flex-row justify-between items-center shadow-md">
+                    <HiMenu fontSize={42} className="cursor-pointer" onClick={() => setToggleSidebar(true)} />
+                    <Link to="/">
+                        <img src={logo} alt="logo" style={{ display: 'inline-block' }} className="w-20" />
+                        <p className="font-pacifico" style={{ display: 'inline-block', fontSize: 36}}>
+                            Pixibit 
+                        </p>
+                    </Link>
+
+                    <Link to={`user-profile/${user?._id}`}>
+                        <img src={user?.image} alt="logo" className="w-12 rounded-full" />
+                    </Link>
+                </div>
+
+                {toggleSidebar && (
+                <div className="fixed w-4/5 bg-white h-screen overflow-y-auto shadow-md z-10 animate-slide-in">
+                    <div className="absolute w-full flex justify-end items-center p-2">
+                        <AiFillCloseCircle fonstSize={30} className="cursor-pointer" onClick={() => setToggleSidebar(false)} />
+                    </div>
+                    {/* desktop sidebar */}
+                    <Sidebar user={user && user} closeToggle={setToggleSidebar} />
+                </div>       
+                )}
+                
+            </div>
+            
+ 
+
+            <div className="pb flex-1 h-screen overflow-y-scroll" ref={scrollRef}>
+                <Routes>
+                    <Route path="/user-profile/:userId" element={<UserProfile />} />
+                    <Route path="/*" element={<Pins user={user && user} />} />
+                </Routes>
+            </div>
+
+        </div>
+    )
+}
+
+export default Home
